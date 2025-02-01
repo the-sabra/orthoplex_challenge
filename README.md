@@ -11,6 +11,7 @@ A RESTful API built with Express.js for user authentication and management, usin
 - Request validation
 - Error handling
 - Docker support for MySQL database
+- Comprehensive unit tests with Vitest
 
 ## Prerequisites
 
@@ -51,7 +52,12 @@ docker-compose up -d
 5. Run database migrations:
 Execute the SQL script in `migrations/user.table.sql`
 
-6. Start the server:
+6. Run tests:
+```bash
+pnpm test
+```
+
+7. Start the server:
 ```bash
  #in development mode
     `pnpm start:dev`
@@ -109,6 +115,3 @@ Request validation is implemented using express-validator. Validation schemas ar
 - Input validation for all requests
 - Parameterized SQL queries to prevent injection
 
-## License
-
-[MIT License](LICENSE)
