@@ -25,9 +25,14 @@ class AuthService {
                 throw new ApiResponse(401,'Invalid email or password');
             }
             const isPasswordValid = await bcrypt.compare(password, user.password);
+            
             if (!isPasswordValid) {
                 console.error("Invalid password");
                 throw new ApiResponse(401,'Invalid email or password');
+            }
+            
+            if(user.is_verified === 0){
+                throw new ApiResponse(405, 'User is not verified');
             }
 
             const updated = await userService.updateLogin(user.id);
