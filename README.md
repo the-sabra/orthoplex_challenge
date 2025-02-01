@@ -14,7 +14,7 @@ A RESTful API built with Express.js for user authentication and management, usin
 
 ## Prerequisites
 
-- Node.js (v14 or higher)
+- Node.js (v18 or higher)
 - pnpm package manager
 - Docker and Docker Compose (for running MySQL)
 - MySQL
@@ -93,7 +93,7 @@ pnpm start
 
 ## Error Handling
 
-The API uses a centralized error handling mechanism. All errors are processed through the `errorHandler` middleware.
+The API uses a centralized error handling mechanism. All errors are processed through the `error.handler` middleware.
 
 ## Validation
 

@@ -6,16 +6,20 @@ dotenv.config();
 
 export const authenticate = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
-  try {
-  if (!token) throw new ApiResponse(401,"Authentication required");
+  if (!token) {
+    return next(new ApiResponse(401, "Authentication required"));
+  }
 
+  try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await userService.getUserById(decoded.userId);
-    if (!user) throw new ApiResponse(401, "Invalid token");
-    req.user = user; 
+    if (!user) {
+      return next(new ApiResponse(401, "Invalid token"));
+    }
+    req.user = user;
     next();
   } catch (err) {
-    next(err);
+    next(new ApiResponse(401, "Invalid token"));
   }
 };
 

@@ -76,8 +76,8 @@ class UserService {
         try {
             const user = await User.findById(id);
             if (!user) {
-                throw new Error('User not found');
-            }
+                throw new ApiResponse(404,'User not found');
+            } 
             return await user.delete();
         } catch (error) {
             throw error;

@@ -7,15 +7,10 @@ import { errorHandler } from './middleware/error.handler.js';
 const app = express();
 dotenv.config(); 
 
-const port = process.env.PORT ||3000;
+const port = process.env.PORT || 3000;
  
 // Middleware for parsing JSON bodies
 app.use(express.json());
-
-// Basic route
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
 
 app.use('/auth', AuthRouter); 
 app.use('/users', UserRouter);

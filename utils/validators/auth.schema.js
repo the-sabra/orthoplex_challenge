@@ -9,7 +9,7 @@ import { body } from "express-validator";
  * - password: must exist and be a string
  */
 export const registerSchema = [
-    body('name').exists().isString(),
+    body('name').exists().isString().isLength({ min: 3, max: 50 }),
     body('email').exists().isEmail(),
     body('password').exists().isString(),
 ];
