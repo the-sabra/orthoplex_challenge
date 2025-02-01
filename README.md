@@ -53,7 +53,10 @@ Execute the SQL script in `migrations/user.table.sql`
 
 6. Start the server:
 ```bash
-pnpm start
+ #in development mode
+    `pnpm start:dev`
+#in production mode 
+    `pnpm start:prod`
 ```
 
 ## API Endpoints

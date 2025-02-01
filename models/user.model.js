@@ -18,13 +18,14 @@ class User {
             if (this.id) {
                 return await this.update();
             }
+            this.password = await this.hashPassword(this.password);
             const [result] = await db.execute(
                 'INSERT INTO users (name, email, password, is_verified, is_admin) VALUES (?, ?, ?, ?, ?)',
-                [this.name, this.email, this.hashPassword(this.password), this.is_verified, this.is_admin]
+                [this.name, this.email, this.password, this.is_verified, this.is_admin]
             );
             this.id = result.insertId;
             this.password = undefined;
-            return this;
+            return this; 
         } catch (error) {
             console.error("Error saving user", error);
             if (error.code === 'ER_DUP_ENTRY') {
@@ -177,8 +178,8 @@ class User {
         }
     }
  
-     hashPassword(password) {
-        return bcrypt.hashSync(password, 10);
+     async hashPassword(password) {
+        return await bcrypt.hash(password, 10);
     }
 }
  
