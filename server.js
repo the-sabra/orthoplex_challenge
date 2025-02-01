@@ -6,12 +6,16 @@ import UserRouter from './routes/user.routes.js';
 import { errorHandler } from './middleware/error.handler.js';
 import helmet from 'helmet';
 import cors from 'cors';
+import morgan from 'morgan';
 
 const app = express();
 dotenv.config(); 
 
 const port = process.env.PORT || 3000;
  
+// Middleware for logging HTTP requests
+app.use(morgan('combined'));
+
 // Middleware for parsing JSON bodies
 app.use(express.json());
 
@@ -31,4 +35,4 @@ app.use(errorHandler);
 app.listen(port, () => {
      connect(); 
     console.log(`Server running at http://localhost:${port}`);
-}); 
+});
