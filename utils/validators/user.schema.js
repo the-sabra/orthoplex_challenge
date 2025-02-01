@@ -29,6 +29,8 @@ export const userQuerySchema = [
     query('name').optional().isString(),
     query('email').optional().isString(),
     query('is_verified').optional().isBoolean(),
+    query('start_date').optional().isDate(),
+    query('end_date').optional().isDate(),
 ];
 
 

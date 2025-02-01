@@ -92,6 +92,8 @@ class UserService {
      * @param {string} [filters.name] - Filter users by name
      * @param {string} [filters.email] - Filter users by email
      * @param {boolean} [filters.is_verified] - Filter users by verification
+     * @param {Date} [filters.start_date] - Filter users by start date
+     * @param {Date} [filters.end_date] - Filter users by end date
      * @returns {Promise<Array<User>>} A promise that resolves to an array of user objects
      * @throws {Error} If there is an error retrieving the users
      */

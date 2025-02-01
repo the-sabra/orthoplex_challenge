@@ -9,8 +9,9 @@ const router  = express.Router();
 router.get('/',authenticate,isAdmin,userQuerySchema,validate,userController.getAllUsers);
 router.post('/verify',verifySchema,validate,userController.verifyUser);
 router.get('/inactive',authenticate,isAdmin,userController.getInActiveUsers);
+router.get('/top-logins',authenticate,isAdmin,userController.getTopLoginUsers);
 router.get('/:userId',userIdSchema ,validate ,userController.getUser);
 router.patch('/:userId',updateUserSchema ,validate ,userController.updateUser);
 router.delete('/:userId',userIdSchema ,validate ,userController.deleteUser);
 
-export default router;
+export default router;  

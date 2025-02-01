@@ -82,41 +82,65 @@ class User {
         }
     }
 
-    static async findAll(page, limit,filters) {
+    static async findAll(page, limit, filters) {
         try {
             const numLimit = parseInt(limit, 10);
             const numPage = parseInt(page, 10);
             const offset = (numPage - 1) * numLimit;
-            let result;
-            if(filters.name || filters.email || filters.is_verified !== undefined){ 
-                const [row] = await db.query(
-                    'SELECT * FROM users WHERE name LIKE ? OR email = ? OR is_verified = ? LIMIT ?, ?', 
-                    [`%${filters.name}%`, filters.email,filters.is_verified === 'true', offset, numLimit]
-                ); 
-                result = row;
-            }else{
-                const [rows] = await db.query(
-                    'SELECT * FROM users LIMIT ?, ?', 
-                    [offset, numLimit]
-                );
-                result = rows;
+            
+            let query = 'SELECT * FROM users';
+            let countQuery = 'SELECT COUNT(*) as count FROM users';
+            let queryParams = [];
+            let whereConditions = [];
+
+            if (filters.name || filters.email || filters.is_verified !== undefined) {
+                if (filters.name) whereConditions.push('name LIKE ?');
+                if (filters.email) whereConditions.push('email = ?');
+                if (filters.is_verified !== undefined) whereConditions.push('is_verified = ?');
+
+                queryParams = [
+                    ...(filters.name ? [`%${filters.name}%`] : []),
+                    ...(filters.email ? [filters.email] : []),
+                    ...(filters.is_verified !== undefined ? [filters.is_verified === 'true'] : [])
+                ];
             }
 
-            const [totalRows] = await db.execute('SELECT COUNT(*) as count FROM users');
-            const totalCount = totalRows[0].count;
-            const totalPages = Math.ceil(totalCount / limit);
+            if (filters.start_date && filters.end_date) {
+                whereConditions.push('created_at BETWEEN ? AND ?');
+                queryParams.push(new Date(filters.start_date), new Date(filters.end_date));
+            }
+
+            if (whereConditions.length > 0) {
+                const whereClause = ' WHERE ' + whereConditions.join(' AND ');
+                query += whereClause;
+                countQuery += whereClause;
+            }
+
+            // Add pagination
+            query += ' LIMIT ?, ?';
+            queryParams.push(Number(offset), Number(numLimit));
+
+            // Execute queries
+            const [rows] = await db.query(query, queryParams);
+            const [totalRows] = await db.query(countQuery, queryParams.slice(0, -2));
+            const [totalVerified] = await db.execute('SELECT COUNT(*) as count FROM users WHERE is_verified = 1');
+
+            const totalCountRegisteredUsers = totalRows[0].count;
+            const totalVerifiedUsers = totalVerified[0].count;
+            const totalPages = Math.ceil(totalCountRegisteredUsers / limit);
 
             return {
-                users: result.map(row => new User({ ...row, password: undefined })),
+                users: rows.map(row => new User({ ...row, password: undefined })),
                 pagination: {
-                    currentPage: page,
+                    currentPage: numPage,
                     totalPages,
-                    totalCount,
-                    hasMore: page < totalPages
+                    totalCountRegisteredUsers,
+                    totalVerifiedUsers,
+                    hasMore: numPage < totalPages
                 }
             };
         } catch (error) {
-            console.error("Error fetching users", error);
+            console.error("Error fetching users:", error);
             throw new Error('Error fetching users');
         }
     }
@@ -138,7 +162,7 @@ class User {
         }
     }
 
-    async findTopLoginUsers(){
+    static async findTopLoginUsers(){
         try {
             const [rows] = await db.execute(
                 `SELECT * 

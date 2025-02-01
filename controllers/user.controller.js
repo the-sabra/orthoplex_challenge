@@ -41,7 +41,9 @@ class UserController {
     async getAllUsers(req, res, next) {
         try {
             const users = await userService.getAllUsers(req.query.page, req.query.limit,
-                {name:req.query.name, email:req.query.email , is_verified:req.query.is_verified}
+                {
+                    ...req.query
+                }
             ); 
             res.json(ApiResponse.success(200,users));
         } catch (error) {
