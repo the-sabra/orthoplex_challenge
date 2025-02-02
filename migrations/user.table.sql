@@ -14,3 +14,8 @@ CREATE TABLE users (
 );
 
 
+CREATE INDEX idx_users_created_at ON users (created_at);
+
+
+CREATE INDEX idx_users_last_login ON users (last_login_at);
+

@@ -1,6 +1,6 @@
 import db from '../config/db.js';
 import * as bcrypt from 'bcrypt';
-
+import logger from '../config/logger.js';
 class User {
     constructor({ id, name, email, password, is_verified = false, is_admin = false , login_count = 0 , last_login_at = null }) {
         this.id = id;
@@ -27,7 +27,7 @@ class User {
             this.password = undefined;
             return this; 
         } catch (error) {
-            console.error("Error saving user", error);
+            logger.error("Error saving user", error);
             if (error.code === 'ER_DUP_ENTRY') {
                 throw new Error('Email already exists');
             }
@@ -50,7 +50,7 @@ class User {
             this.password = undefined;
             return result.affectedRows > 0 ? this : null;
         } catch (error) {
-            console.error("Error updating user", error);
+            logger.error("Error updating user", error);
             throw new Error('Error updating user');
         }
     }
@@ -69,6 +69,7 @@ class User {
             const [rows] = await db.execute('SELECT * FROM users WHERE id = ?', [id]);
             return rows[0] ? new User(rows[0]) : null;
         } catch (error) {
+            logger.error("Error fetching user", error);
             throw new Error('Error fetching user');
         }
     }
@@ -78,7 +79,7 @@ class User {
             const [rows] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
             return rows[0] ? new User(rows[0]) : null;
         } catch (error) {
-            console.error("Error fetching user", error);
+            logger.error("Error fetching user", error);
             throw new Error('Error fetching user');
         }
     }
@@ -121,6 +122,7 @@ class User {
             query += ' LIMIT ?, ?';
             queryParams.push(Number(offset), Number(numLimit));
 
+
             // Execute queries
             const [rows] = await db.query(query, queryParams);
             const [totalRows] = await db.query(countQuery, queryParams.slice(0, -2));
@@ -141,7 +143,7 @@ class User {
                 }
             };
         } catch (error) {
-            console.error("Error fetching users:", error);
+            logger.error("Error fetching users:", error);
             throw new Error('Error fetching users');
         }
     }
@@ -158,7 +160,7 @@ class User {
             
             return rows.map(row => new User({ ...row, password: undefined }));
         } catch (error) {
-            console.error("Error fetching inactive users", error);
+            logger.error("Error fetching inactive users", error);
             throw new Error('Error fetching inactive users');
         }
     }
@@ -173,7 +175,7 @@ class User {
             );
             return rows.map(row => new User({ ...row, password: undefined }));
         } catch (error) {
-            console.error("Error fetching inactive users", error);
+            logger.error("Error fetching inactive users", error);
             throw new Error('Error fetching inactive users');
         }
     }
