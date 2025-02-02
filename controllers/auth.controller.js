@@ -1,12 +1,10 @@
 import  authService from '../services/auth.service.js';
 import { ApiResponse } from "../utils/apiResponse.js";
-import jwt from '../utils/jwt.js';
 
 class AuthController {
     async register(req, res, next) {
         try {
-            const { user } = await authService.register(req.body);
-            const token = jwt.sign({ userId: user.id });
+            const { user , token } = await authService.register(req.body);
             
             res.status(201).json(
                 ApiResponse.success(
@@ -37,8 +35,7 @@ class AuthController {
      */
     async login(req, res, next) {
         try {
-            const user = await authService.login(req.body);
-            const token = jwt.sign({ userId: user.id });
+            const {user , token} = await authService.login(req.body);
 
             res.json(
                 ApiResponse.success(
@@ -50,15 +47,6 @@ class AuthController {
                     'Login successful'
                 )
             );
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    async logout(req, res, next) {
-        try {
-            await authService.logout();
-            res.json(ApiResponse.success(null, 'Logout successful'));
         } catch (error) {
             next(error);
         }

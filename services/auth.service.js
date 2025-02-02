@@ -2,6 +2,7 @@ import userService from "./user.service.js";
 import User from "../models/user.model.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import bcrypt from 'bcrypt';
+import jwt from '../utils/jwt.js';
 
 
 class AuthService {
@@ -12,7 +13,8 @@ class AuthService {
                 throw new ApiResponse(404, 'Email already exists');
             }
             const user = new User({ name, email, password });
-            return { user: await user.save() };
+            const token = jwt.sign({ userId: user.id });
+            return { user: await user.save(), token };
         } catch (error) {
             throw error;
         }
@@ -35,9 +37,10 @@ class AuthService {
                 throw new ApiResponse(405, 'User is not verified');
             }
 
+            const token = jwt.sign({ userId: user.id });
             const updated = await userService.updateLogin(user.id);
             updated.password = undefined;
-            return updated;
+            return { user:updated , token };
         } catch (error) {
             throw error;
         }
